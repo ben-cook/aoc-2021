@@ -1,4 +1,5 @@
 use std::fs;
+use std::slice::Windows;
 
 fn main() {
     one();
@@ -32,32 +33,25 @@ fn two() {
 
     let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
 
-    let nums = contents.lines();
+    let num_vec: Vec<u32> = contents
+        .lines()
+        .map(|line| line.parse::<u32>().unwrap())
+        .collect();
+
+    let nums: &[u32] = &num_vec[..];
 
     let mut count = 0;
 
-    let mut a = 0;
-    let mut b = 0;
-    let mut c = 0;
+    let mut prev_win = 99999;
 
-    for (index, num) in nums.enumerate() {
-        let num = num.parse::<i32>().unwrap();
+    for win in nums.windows(3) {
+        let sum = win.to_vec().into_iter().sum();
 
-        if index > 2 {
-            if num > a {
-                count += 1;
-            }
-
-            a = b;
-            b = c;
-            c = num;
-        } else if index == 0 {
-            a = num;
-        } else if index == 1 {
-            b = num;
-        } else if index == 2 {
-            c = num;
+        if sum > prev_win {
+            count += 1
         }
+
+        prev_win = sum;
     }
 
     println!("{}", count);
