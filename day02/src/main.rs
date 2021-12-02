@@ -1,8 +1,7 @@
 use std::fs;
-use std::slice::SliceIndex;
 
 fn main() {
-    // one();
+    one();
     two();
 }
 
@@ -28,7 +27,6 @@ fn one() {
             "forward" => horizontal += amount,
             _ => panic!("bad direction"),
         }
-
     }
 
     println!("{} * {} = {}", horizontal, depth, horizontal * depth);
@@ -60,7 +58,6 @@ fn two() {
             }
             _ => panic!("bad direction"),
         }
-
     }
 
     println!("{} * {} = {}", horizontal, depth, horizontal * depth);

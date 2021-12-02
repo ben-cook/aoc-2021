@@ -1,4 +1,4 @@
-use std::{fs, io::BufRead};
+use std::fs;
 
 fn main() {
     one();
