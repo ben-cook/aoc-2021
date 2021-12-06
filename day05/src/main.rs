@@ -1,8 +1,8 @@
-use std::fs;
-
 fn main() {
-    one();
-    two();
+    let input = include_str!("../input.txt");
+
+    one(input);
+    two(input);
 }
 
 struct Board {
@@ -10,7 +10,7 @@ struct Board {
 }
 
 impl Board {
-    fn show(&self) {
+    fn _show(&self) {
         for row in &self.array {
             for num in row {
                 if *num == 0 {
@@ -47,13 +47,8 @@ impl Board {
     }
 }
 
-fn one() {
-    let filename: &str = "input.txt";
-
-    let contents: String =
-        fs::read_to_string(filename).expect("Something went wrong reading the file");
-
-    let lines: Vec<&str> = contents.lines().collect();
+fn one(input: &str) {
+    let lines: Vec<&str> = input.lines().collect();
 
     // Initialise Board
     let max_number: usize = lines
@@ -62,8 +57,8 @@ fn one() {
             line.split(" -> ")
                 .flat_map(|pair| pair.split(',').map(|n| n.parse::<usize>().unwrap()))
         })
-        .max()
-        .expect("Couldn't find max")
+        .reduce(|accum, item| if accum >= item { accum } else { item })
+        .unwrap()
         + 1;
 
     let mut array: Vec<Vec<i32>> = Vec::new();
@@ -73,8 +68,8 @@ fn one() {
 
     let mut board: Board = Board { array };
 
-    // Read in the lines
-    let coords: Vec<Vec<(i32, i32)>> = lines
+    // Filter to straight lines
+    let filtered_coords: Vec<Vec<(i32, i32)>> = lines
         .iter()
         .map(|line| {
             return line
@@ -86,16 +81,11 @@ fn one() {
                 })
                 .collect::<Vec<(i32, i32)>>();
         })
-        .collect();
-
-    // Filter to straight lines
-    let filtered_coords: Vec<Vec<(i32, i32)>> = coords
-        .into_iter()
         .filter(|coord_pair| {
             let (x1, y1) = *coord_pair.get(0).unwrap();
             let (x2, y2) = *coord_pair.get(1).unwrap();
 
-            return x1 == x2 || y1 == y2;
+            x1 == x2 || y1 == y2
         })
         .collect();
 
@@ -103,10 +93,7 @@ fn one() {
         let (mut x1, mut y1) = *coord_pair.get(0).unwrap();
         let (x2, y2) = *coord_pair.get(1).unwrap();
 
-        let direction = (x2 - x1, y2 - y1);
-
-        // Normalise direction
-        let direction = (num::signum(direction.0), num::signum(direction.1));
+        let direction = ((x2 - x1).signum(), (y2 - y1).signum());
 
         // Add the lines
         while (x1, y1) != (x2, y2) {
@@ -117,16 +104,11 @@ fn one() {
         board.add_coord(x1 as usize, y1 as usize);
     }
 
-    println!("overlaps: {}", board.count_overlaps());
+    println!("part one: {} overlaps", board.count_overlaps());
 }
 
-fn two() {
-    let filename: &str = "input.txt";
-
-    let contents: String =
-        fs::read_to_string(filename).expect("Something went wrong reading the file");
-
-    let lines: Vec<&str> = contents.lines().collect();
+fn two(input: &str) {
+    let lines: Vec<&str> = input.lines().collect();
 
     // Initialise Board
     let max_number: usize = lines
@@ -135,8 +117,8 @@ fn two() {
             line.split(" -> ")
                 .flat_map(|pair| pair.split(',').map(|n| n.parse::<usize>().unwrap()))
         })
-        .max()
-        .expect("Couldn't find max")
+        .reduce(|accum, item| if accum >= item { accum } else { item })
+        .unwrap()
         + 1;
 
     let mut array: Vec<Vec<i32>> = Vec::new();
@@ -165,10 +147,7 @@ fn two() {
         let (mut x1, mut y1) = *coord_pair.get(0).unwrap();
         let (x2, y2) = *coord_pair.get(1).unwrap();
 
-        let direction = (x2 - x1, y2 - y1);
-
-        // Normalise direction
-        let direction = (num::signum(direction.0), num::signum(direction.1));
+        let direction = ((x2 - x1).signum(), (y2 - y1).signum());
 
         // Add the lines
         while (x1, y1) != (x2, y2) {
@@ -179,5 +158,5 @@ fn two() {
         board.add_coord(x1 as usize, y1 as usize);
     }
 
-    println!("overlaps: {}", board.count_overlaps());
+    println!("part two: {} overlaps", board.count_overlaps());
 }
