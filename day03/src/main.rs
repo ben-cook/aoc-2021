@@ -1,28 +1,26 @@
-use std::fs;
-
 fn main() {
-    one();
-    two();
+    let input = include_str!("../input.txt");
+
+    one(input);
+    two(input);
 }
 
 fn bin_to_dec(n: &[i32]) -> i32 {
     n.to_vec()
         .iter()
         .enumerate()
-        .map(|(idx, value)| value * 2i32.pow((11 - idx).try_into().unwrap()))
+        .map(|(idx, value)| value * 2i32.pow((n.len() - idx - 1).try_into().unwrap()))
         .sum::<i32>()
 }
 
-fn one() {
-    let filename = "input.txt";
+fn one(input: &str) {
+    let lines: Vec<&str> = input.lines().collect();
 
-    let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
-
-    let lines: Vec<&str> = contents.lines().collect();
+    let line_length = lines.get(0).unwrap().len();
 
     let mut most_common_digits: Vec<i32> = Vec::new();
 
-    for i in 0..12 {
+    for i in 0..line_length {
         let mut count = 0;
         for line in &lines {
             let digit = line
@@ -34,7 +32,7 @@ fn one() {
             count += digit;
         }
 
-        if count > 500 {
+        if count > ((lines.len() as f32) / 2f32) as u32 {
             most_common_digits.push(1);
         } else {
             most_common_digits.push(0);
@@ -50,17 +48,17 @@ fn one() {
 
     let epsilon = bin_to_dec(&least_common_digits);
 
-    println!("{} * {} = {}", gamma, epsilon, gamma * epsilon);
+    println!("part one: {} * {} = {}", gamma, epsilon, gamma * epsilon);
 }
 
 fn numbers_with_digit_at_position<'a>(
     digit: i32,
     position: i32,
-    lines: &Vec<&'a str>,
+    lines: &[&'a str],
 ) -> Vec<&'a str> {
     return lines
-        .clone()
-        .into_iter()
+        .iter()
+        .copied()
         .filter(|line| {
             line.chars()
                 .nth(position as usize)
@@ -72,12 +70,8 @@ fn numbers_with_digit_at_position<'a>(
         .collect();
 }
 
-fn two() {
-    let filename = "input.txt";
-
-    let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
-
-    let mut lines: Vec<&str> = contents.lines().collect();
+fn two(input: &str) {
+    let mut lines: Vec<&str> = input.lines().collect();
 
     let mut oxygen = 0;
     let mut co2 = 0;
@@ -119,7 +113,7 @@ fn two() {
         lines = filtered_nums;
     }
 
-    lines = contents.lines().collect();
+    lines = input.lines().collect();
     i = 0;
 
     while lines.len() > 1 {
@@ -157,5 +151,5 @@ fn two() {
         lines = filtered_nums;
     }
 
-    println!("{} * {} = {}", oxygen, co2, oxygen * co2);
+    println!("part two: {} * {} = {}", oxygen, co2, oxygen * co2);
 }
