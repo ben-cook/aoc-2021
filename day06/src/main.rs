@@ -16,19 +16,11 @@ fn one(input: &str) {
 
     const DAYS: usize = 80;
     for _ in 0..DAYS {
-        fishes = fishes.into_iter().map(|fish| fish - 1).collect::<Vec<_>>();
-
-        let mut new_fish = 0;
-
-        for fish in &fishes {
-            if *fish == -1 {
-                new_fish += 1;
-            }
-        }
+        let new_fish = fishes.iter().filter(|fish| **fish == 0).count();
 
         fishes = fishes
             .into_iter()
-            .map(|fish| if fish == -1 { 6 } else { fish })
+            .map(|fish| if fish == 0 { 6 } else { fish - 1 })
             .collect::<Vec<_>>();
 
         fishes.resize(fishes.len() + new_fish, 8);
