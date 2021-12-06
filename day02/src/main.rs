@@ -1,64 +1,62 @@
-use std::fs;
-
 fn main() {
-    one();
-    two();
+    let input = include_str!("../input.txt");
+
+    one(input);
+    two(input);
 }
 
-fn one() {
-    let filename = "input.txt";
+fn one(input: &str) {
+    let (depth, horizontal) = input
+        .lines()
+        .map(|line| {
+            let mut split = line.split(' ');
+            let instruction = split.next().unwrap();
+            let magnitude = split.next().unwrap().parse::<i32>().unwrap();
 
-    let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
+            (instruction, magnitude)
+        })
+        .fold(
+            (0, 0),
+            |(depth, horizontal), (instruction, magnitude)| match instruction {
+                "up" => (depth - magnitude, horizontal),
+                "down" => (depth + magnitude, horizontal),
+                "forward" => (depth, horizontal + magnitude),
+                _ => unreachable!(),
+            },
+        );
 
-    let lines = contents.lines();
-
-    let mut horizontal = 0;
-    let mut depth = 0;
-
-    for line in lines {
-        let split: Vec<&str> = line.split(" ").collect();
-
-        let dir: &str = split.get(0).unwrap();
-        let amount: i32 = split.get(1).unwrap().parse::<i32>().unwrap();
-
-        match dir {
-            "up" => depth -= amount,
-            "down" => depth += amount,
-            "forward" => horizontal += amount,
-            _ => panic!("bad direction"),
-        }
-    }
-
-    println!("{} * {} = {}", horizontal, depth, horizontal * depth);
+    println!(
+        "part one: {} * {} = {}",
+        depth,
+        horizontal,
+        horizontal * depth
+    );
 }
 
-fn two() {
-    let filename = "input.txt";
+fn two(input: &str) {
+    let (depth, horizontal, _aim) = input
+        .lines()
+        .map(|line| {
+            let mut split = line.split(' ');
+            let instruction = split.next().unwrap();
+            let magnitude = split.next().unwrap().parse::<i32>().unwrap();
 
-    let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
+            (instruction, magnitude)
+        })
+        .fold(
+            (0, 0, 0),
+            |(depth, horizontal, aim), (instruction, magnitude)| match instruction {
+                "up" => (depth, horizontal, aim - magnitude),
+                "down" => (depth, horizontal, aim + magnitude),
+                "forward" => (depth + aim * magnitude, horizontal + magnitude, aim),
+                _ => unreachable!(),
+            },
+        );
 
-    let lines = contents.lines();
-
-    let mut horizontal = 0;
-    let mut aim = 0;
-    let mut depth = 0;
-
-    for line in lines {
-        let split: Vec<&str> = line.split(" ").collect();
-
-        let dir: &str = split.get(0).unwrap();
-        let amount: i32 = split.get(1).unwrap().parse::<i32>().unwrap();
-
-        match dir {
-            "up" => aim -= amount,
-            "down" => aim += amount,
-            "forward" => {
-                horizontal += amount;
-                depth += aim * amount
-            }
-            _ => panic!("bad direction"),
-        }
-    }
-
-    println!("{} * {} = {}", horizontal, depth, horizontal * depth);
+    println!(
+        "part two: {} * {} = {}",
+        depth,
+        horizontal,
+        horizontal * depth
+    );
 }
