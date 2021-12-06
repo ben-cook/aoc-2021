@@ -1,8 +1,8 @@
-use std::fs;
-
 fn main() {
-    // one();
-    two();
+    let input = include_str!("../input.txt");
+
+    one(input);
+    two(input);
 }
 
 #[derive(Debug, Clone)]
@@ -42,7 +42,7 @@ impl Board {
                 return true;
             }
         }
-        return false;
+        false
     }
 
     fn sum_uncalled(&self) -> i32 {
@@ -60,7 +60,7 @@ impl Board {
     }
 }
 
-fn read_board(lines: &Vec<&str>, starting_index: i32) -> Board {
+fn read_board(lines: &[&str], starting_index: i32) -> Board {
     let mut array = Vec::new();
 
     for i in 0..5 {
@@ -69,7 +69,7 @@ fn read_board(lines: &Vec<&str>, starting_index: i32) -> Board {
             .expect("Couldn't parse board line");
 
         let line: Vec<(i32, bool)> = line
-            .split(" ")
+            .split(' ')
             .map(|num_str| num_str.trim())
             .filter_map(|num| num.parse::<i32>().ok())
             .map(|num| (num, false))
@@ -81,23 +81,15 @@ fn read_board(lines: &Vec<&str>, starting_index: i32) -> Board {
     Board { array, won: false }
 }
 
-fn one() {
-    let filename = "input.txt";
-
-    let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
-
-    let lines: Vec<&str> = contents.lines().collect();
+fn one(input: &str) {
+    let lines: Vec<&str> = input.lines().collect();
 
     let numbers_called: Vec<i32> = lines
         .get(0)
         .expect("Empty Input")
-        .split(",")
+        .split(',')
         .map(|num| num.parse::<i32>().expect("Couldn't parse number called"))
         .collect();
-
-    println!("numbers called = {:?}", numbers_called);
-
-    println!("board 1: {:?}", read_board(&lines, 2));
 
     let mut boards: Vec<Board> = Vec::new();
 
@@ -114,43 +106,37 @@ fn one() {
 
         let number_called = *numbers_called.get(i).expect("Ran out of numbers called");
 
-        println!("Calling number {}", number_called);
         for index in 0..boards.len() {
             let board: &mut Board = boards.get_mut(index).unwrap();
             board.call_number(number_called);
 
             // check if the board has won
-
             if board.won() {
-                println!("the winning board is {:#?}", board);
                 cont = false;
 
                 // sum the uncalled numbers in the board
-
                 let sum = board.sum_uncalled();
-                println!("sum of uncalled is {}", sum);
-                println!("{} * {} = {}", number_called, sum, number_called * sum);
+                println!(
+                    "part one: {} * {} = {}",
+                    number_called,
+                    sum,
+                    number_called * sum
+                );
                 break;
             }
         }
 
         i += 1;
-
-        // println!("boards: {:#?}", boards);
     }
 }
 
-fn two() {
-    let filename = "input.txt";
-
-    let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
-
-    let lines: Vec<&str> = contents.lines().collect();
+fn two(input: &str) {
+    let lines: Vec<&str> = input.lines().collect();
 
     let numbers_called: Vec<i32> = lines
         .get(0)
         .expect("Empty Input")
-        .split(",")
+        .split(',')
         .map(|num| num.parse::<i32>().expect("Couldn't parse number called"))
         .collect();
 
@@ -164,9 +150,6 @@ fn two() {
     let mut cont = true;
     let mut num_won = 0;
     let num_boards = boards.len();
-    // let num_boards = 3;
-
-    // let mut last_num_called = 0;
 
     loop {
         if !cont {
@@ -179,9 +162,6 @@ fn two() {
             Some(number_called) => {
                 let number_called = *number_called;
 
-                // last_num_called = number_called;
-
-                println!("Calling number {}", number_called);
                 for index in 0..boards.len() {
                     let board: &mut Board = boards.get_mut(index).unwrap();
 
@@ -194,21 +174,20 @@ fn two() {
 
                     if board.won() {
                         num_won += 1;
-                        println!("board {} won. total number won is {}", index, num_won);
 
                         board.won = true;
 
-                        // last_won = Box::new(*board);
-
                         if num_won == num_boards {
-                            println!("the last winning board is {:#?}", board);
                             cont = false;
 
                             // sum the uncalled numbers in the board
-
                             let sum = board.sum_uncalled();
-                            println!("sum of uncalled is {}", sum);
-                            println!("{} * {} = {}", number_called, sum, number_called * sum);
+                            println!(
+                                "part two: {} * {} = {}",
+                                number_called,
+                                sum,
+                                number_called * sum
+                            );
 
                             break;
                         }
