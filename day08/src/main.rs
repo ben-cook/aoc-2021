@@ -18,12 +18,12 @@ fn one(input: &str) {
         .lines()
         .map(|line| {
             line.trim()
-                .split('|')
-                .nth(1)
+                .split_once('|')
                 .unwrap()
+                .1
                 .split(' ')
                 .map(|v| v.len())
-                .filter(|a| *a == 2 || *a == 3 || *a == 4 || *a == 7)
+                .filter(|a| [2, 3, 4, 7].contains(a))
                 .count() as i64
         })
         .sum();
