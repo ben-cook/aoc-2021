@@ -80,10 +80,14 @@ fn try_permutation(
 
     let ans = output_values
         .iter()
-        .rev()
-        .enumerate()
-        .map(|(i, s)| display_digit(&translate_and_sort(perm, s)).unwrap() * 10usize.pow(i as u32))
-        .sum();
+        .map(|s| {
+            display_digit(&translate_and_sort(perm, s))
+                .unwrap()
+                .to_string()
+        })
+        .collect::<String>()
+        .parse()
+        .unwrap();
 
     Some(ans)
 }
