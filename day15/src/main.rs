@@ -93,12 +93,8 @@ fn two(input: &str) -> i64 {
         })
         .collect();
 
-    let og_col_length = input_grid.len();
-    let og_row_length = input.lines().next().unwrap().len();
-
     let mut tall_grid: Vec<Vec<i64>> = Vec::new();
 
-    // for i in 0..4 {
     let input_grid2 = &mut input_grid.clone();
     let input_grid3 = &mut input_grid
         .iter()
@@ -174,8 +170,6 @@ fn two(input: &str) -> i64 {
 
         grid.push(new_vec);
     });
-
-    show_grid(&grid);
 
     fn show_grid(grid: &[Vec<i64>]) {
         for row in grid {
