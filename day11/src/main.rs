@@ -26,7 +26,7 @@ fn one(input: &str) -> i64 {
 
     let mut grid = Grid::from(data);
 
-    const STEPS: i64 = 5;
+    const STEPS: i64 = 1;
 
     println!("Before any steps:");
     grid.show(0);
@@ -39,13 +39,20 @@ fn one(input: &str) -> i64 {
                 .collect(),
         );
 
-        let flashed_coords: Vec<(usize, usize)> = Vec::new();
+        let mut flashed_coords: Vec<(usize, usize)> = Vec::new();
         let mut did_flash = true;
         while did_flash {
             did_flash = false;
-            for (y, row) in grid.data().iter().enumerate() {
-                for (x, item) in row.iter().enumerate() {
-                    if *item > 9 {}
+            for (y, row) in grid.data_mut().iter_mut().enumerate() {
+                for (x, item) in row.iter_mut().enumerate() {
+                    if *item > 9 {
+                        println!("({},{}) - ({}) flashed", x, y, *item);
+                        *item = 0;
+                        flashed_coords.push((x, y));
+                        did_flash = true;
+
+                        for (x1, y1, v1) in grid.neighbours8_coords(x, y) {}
+                    }
                 }
             }
         }

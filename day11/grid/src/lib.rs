@@ -17,6 +17,10 @@ impl<T: Display + Ord> Grid<T> {
         &self.data
     }
 
+    pub fn data_mut(&mut self) -> &mut Vec<Vec<T>> {
+        &mut self.data
+    }
+
     pub fn add_row(&mut self, row: Vec<T>) {
         self.data.push(row);
     }
@@ -40,6 +44,16 @@ impl<T: Display + Ord> Grid<T> {
     pub fn get(&self, x: isize, y: isize) -> Option<&T> {
         if let Some(row) = self.data.get(y as usize) {
             if let Some(value) = row.get(x as usize) {
+                return Some(value);
+            }
+        }
+
+        None
+    }
+
+    pub fn get_mut(&mut self, x: isize, y: isize) -> Option<&mut T> {
+        if let Some(row) = self.data.get_mut(y as usize) {
+            if let Some(value) = row.get_mut(x as usize) {
                 return Some(value);
             }
         }
@@ -140,4 +154,35 @@ impl<T: Display + Ord> Grid<T> {
         .map(|(x, y, value)| (*x as usize, *y as usize, value.unwrap()))
         .collect()
     }
+
+    // pub fn neighbours8_coords_mut(&self, x: isize, y: isize) -> Vec<(usize, usize, &mut T)> {
+    //     let up = (x, y - 1, self.get_mut(x, y - 1));
+    //     let down = (x, y + 1, self.get_mut(x, y + 1));
+    //     let left = (x - 1, y, self.get_mut(x - 1, y));
+    //     let right = (x + 1, y, self.get_mut(x + 1, y));
+    //     let top_right = (x + 1, y - 1, self.get_mut(x + 1, y - 1));
+    //     let top_left = (x - 1, y - 1, self.get_mut(x - 1, y - 1));
+    //     let bottom_right = (x + 1, y + 1, self.get_mut(x + 1, y + 1));
+    //     let bottom_left = (x - 1, y + 1, self.get_mut(x - 1, y + 1));
+
+    //     vec![
+    //         up,
+    //         down,
+    //         left,
+    //         right,
+    //         top_right,
+    //         top_left,
+    //         bottom_right,
+    //         bottom_left,
+    //     ]
+    //     .iter()
+    //     .filter_map(|(x, y, value)| {
+    //         if let Some(v) = value {
+    //             Some((*x as usize, *y as usize, v))
+    //         } else {
+    //             None
+    //         }
+    //     })
+    //     .collect()
+    // }
 }
