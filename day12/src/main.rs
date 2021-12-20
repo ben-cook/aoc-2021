@@ -113,7 +113,7 @@ fn one(input: &str) -> i64 {
     let start_idx = *node_map.get("start").unwrap();
     let end_idx = *node_map.get("end").unwrap();
 
-    let mut visited: Vec<NodeIndex> = Vec::new();
+    let visited: Vec<NodeIndex> = Vec::new();
 
     find_paths_to_end(start_idx, &visited, 0, &graph, end_idx)
 }
@@ -172,23 +172,79 @@ fn two(input: &str) -> i64 {
         count: i64,
         graph: &Graph<Node, Edge, petgraph::Undirected>,
         end_index: NodeIndex,
+        start_index: NodeIndex,
     ) -> i64 {
+        if current_node == end_index {
+            // for visited_node in current_visited {
+            //     print!("{} ", graph[*visited_node].label);
+            // }
+            // println!("end");
+
+            let small_nodes = current_visited
+                .iter()
+                .filter(|node| graph[**node].size == CaveSize::Small)
+                .collect_vec();
+
+            let mut visited_map = HashMap::new();
+            for node in small_nodes {
+                *visited_map.entry(node).or_insert(0) += 1;
+            }
+
+            if visited_map.values().filter(|x| **x > 1).count() > 1 {
+                return 0;
+            }
+
+            return 1;
+        }
+
+        // start dc HN kj sa kj dc end
+
+        // println!(
+        //     "{:>width$}",
+        //     &graph[current_node].label,
+        //     width = count as usize * 2
+        // );
         let neighbours = graph.neighbors(current_node);
 
         let available_neighbours = neighbours
             .filter(|neighbour| {
-                !(graph
-                    .node_weight(*neighbour)
-                    .expect("couldn't find node in graph")
-                    .size
-                    == CaveSize::Small
-                    && current_visited.contains(neighbour))
+                // Can't go back to start
+                if *neighbour == start_index {
+                    return false;
+                }
+
+                // Number of small caves visited twice = 1
+                let mut visited_twice = 0;
+                let mut visited_map = HashMap::new();
+                let mut new_visited =
+                    <&[petgraph::prelude::NodeIndex]>::clone(&current_visited).to_vec();
+                new_visited.push(*neighbour);
+                for visited_node in new_visited {
+                    if graph[visited_node].size == CaveSize::Small {
+                        *visited_map.entry(visited_node).or_insert(0) += 1;
+                    }
+                }
+
+                // println!("{:?}", visited_map);
+                for (_idx, val) in visited_map {
+                    // println!("{:?} - {}", idx, graph[idx].label);
+                    if val > 1 {
+                        visited_twice += 1;
+                    }
+
+                    if val > 2 {
+                        return false;
+                    }
+                }
+                // println!("# of nodes visited twice: {}", visited_twice);
+
+                if visited_twice > 1 {
+                    return false;
+                }
+
+                true
             })
             .collect_vec();
-
-        if current_node == end_index {
-            return 1;
-        }
 
         let mut new_visited = <&[petgraph::prelude::NodeIndex]>::clone(&current_visited).to_vec();
         new_visited.push(current_node);
@@ -196,7 +252,14 @@ fn two(input: &str) -> i64 {
         available_neighbours
             .iter()
             .map(|neighbour| {
-                find_paths_to_end(*neighbour, &new_visited, count + 1, graph, end_index)
+                find_paths_to_end(
+                    *neighbour,
+                    &new_visited,
+                    count + 1,
+                    graph,
+                    end_index,
+                    start_index,
+                )
             })
             .sum()
     }
@@ -204,7 +267,7 @@ fn two(input: &str) -> i64 {
     let start_idx = *node_map.get("start").unwrap();
     let end_idx = *node_map.get("end").unwrap();
 
-    let mut visited: Vec<NodeIndex> = Vec::new();
+    let visited: Vec<NodeIndex> = Vec::new();
 
-    find_paths_to_end(start_idx, &visited, 0, &graph, end_idx)
+    find_paths_to_end(start_idx, &visited, 0, &graph, end_idx, start_idx)
 }
